@@ -29,7 +29,10 @@ for case let url as URL in enumerator where try url.resourceValues(forKeys: [.is
 }
 
 if !missingStrings.isEmpty {
-    print(missingStrings)
+    for (key, values) in missingStrings {
+        print(key)
+        print(values.map { "- \($0)" }.joined(separator: "\n"))
+    }
     exit(1)
 }
 
