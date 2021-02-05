@@ -19,5 +19,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Check Missing Strings
-        uses: JonathanDowning/empty-strings-checker@v1.0.0
+        uses: popsa-hq/missing-strings-checker@v1.0.0
 ```
