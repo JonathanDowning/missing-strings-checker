@@ -9,7 +9,7 @@ import Foundation
 
 print("::group::Searching for missing strings")
 
-guard let enumerator = FileManager.default.enumerator(at: URL(fileURLWithPath: FileManager.default.currentDirectoryPath), includingPropertiesForKeys: nil, options: [.skipsHiddenFiles, .skipsPackageDescendants], errorHandler: nil) else {
+guard let enumerator = FileManager.default.enumerator(at: URL(fileURLWithPath: FileManager.default.currentDirectoryPath), includingPropertiesForKeys: nil, options: [.skipsHiddenFiles, .skipsPackageDescendants]) else {
     fatalError("Could not create enumerator")
 }
 
