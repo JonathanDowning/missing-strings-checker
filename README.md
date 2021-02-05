@@ -1,5 +1,5 @@
-# Xcode Empty Strings Checker
-Github Action which checks .stringsdict and .strings (e.g. `Localizable.strings`) files for empty strings.
+# Xcode Missing Strings Checker
+Github Action which checks .stringsdict and .strings (e.g. `Localizable.strings`) files for missing translations.
 
 ## Example usage
 
