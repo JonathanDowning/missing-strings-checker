@@ -1,2 +1,2 @@
 #!/bin/bash
-set -o pipefail && swift main.swift
+set -o pipefail && swift /main.swift
