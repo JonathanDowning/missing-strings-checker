@@ -3,3 +3,6 @@ description: 'A tool to ensure missing translations are not merged into an Xcode
 runs:
   using: 'docker'
   image: 'Dockerfile'
+branding:
+  color: 'blue'
+  icon: 'align-left'
