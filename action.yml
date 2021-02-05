@@ -1,0 +1,5 @@
+name: 'GitHub Action for checking empty strings in an Xcode project'
+description: 'A tool to ensure missing translations aren't merged into an Xcode project.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
