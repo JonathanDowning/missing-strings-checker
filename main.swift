@@ -7,6 +7,8 @@
 
 import Foundation
 
+print("::group::Searching for missing strings")
+
 guard let enumerator = FileManager.default.enumerator(at: URL(fileURLWithPath: FileManager.default.currentDirectoryPath), includingPropertiesForKeys: nil, options: [.skipsHiddenFiles, .skipsPackageDescendants], errorHandler: nil) else {
     fatalError("Could not create enumerator")
 }
@@ -29,11 +31,14 @@ for case let url as URL in enumerator where try url.resourceValues(forKeys: [.is
 }
 
 if !missingStrings.isEmpty {
+    print("::error::Missing strings found")
     for (key, values) in missingStrings {
         print(key)
         print(values.map { "- \($0)" }.joined(separator: "\n"))
     }
     exit(1)
+} else {
+    print("No missing strings in project")
 }
 
 func parseEmptyStringsFile(at url: URL) throws -> [String] {
@@ -78,3 +83,5 @@ func parseEmptyStringsDictFile(at url: URL) throws -> [String] {
         return nil
     }
 }
+
+print("::endgroup::")
