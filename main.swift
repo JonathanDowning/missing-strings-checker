@@ -16,14 +16,18 @@ guard let enumerator = FileManager.default.enumerator(at: URL(fileURLWithPath: F
 var missingStrings: [String: [String]] = [:]
 
 for case let url as URL in enumerator where try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
+    var exceptions = Set<String>()
+    if url.pathExtension == "txt" && url.deletingPathExtension().lastPathComponent == "ignored_translation_keys" {
+        exceptions = try parseExceptionKeys(at: url)
+    }
     if url.pathExtension == "strings" {
-        let emptyStrings = try parseEmptyStringsFile(at: url)
+        let emptyStrings = try parseEmptyStringsFile(at: url, with: exceptions)
         if !emptyStrings.isEmpty {
             missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
         }
     }
     if url.pathExtension == "stringsdict" {
-        let emptyStrings = try parseEmptyStringsDictFile(at: url)
+        let emptyStrings = try parseEmptyStringsDictFile(at: url, with: exceptions)
         if !emptyStrings.isEmpty {
             missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
         }
@@ -41,21 +45,26 @@ if !missingStrings.isEmpty {
     print("No missing strings in project")
 }
 
-func parseEmptyStringsFile(at url: URL) throws -> [String] {
+func parseExceptionKeys(at url: URL) throws -> Set<String> {
+    let strings = try String(contentsOf: url).components(separatedBy: .newlines)
+    return Set(strings)
+}
+
+func parseEmptyStringsFile(at url: URL, with exceptions: Set<String>) throws -> [String] {
     let strings = try String(contentsOf: url).components(separatedBy: .newlines)
     let keyValues = strings.compactMap { string -> String? in
         var string = string
         guard string.popLast() == ";" else { return nil }
         let components = string.components(separatedBy: "=").map { $0.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "\"", with: "") }
         guard components.count == 2 else { return nil }
-        guard !components[0].isEmpty else { return nil }
+        guard !components[0].isEmpty, !exceptions.contains(components[0]) else { return nil }
         guard components[1].isEmpty else { return nil }
         return components[0]
     }
     return keyValues
 }
 
-func parseEmptyStringsDictFile(at url: URL) throws -> [String] {
+func parseEmptyStringsDictFile(at url: URL, with exceptions: Set<String>) throws -> [String] {
     struct StringsDictionaryValue: Decodable {
         struct Format: Decodable {
             var NSStringFormatSpecTypeKey: String
@@ -78,7 +87,7 @@ func parseEmptyStringsDictFile(at url: URL) throws -> [String] {
             dictionary.format.many?.isEmpty != true,
             dictionary.format.few?.isEmpty != true
         else {
-            return key
+            return exceptions.contains(key) ? nil : key
         }
         return nil
     }
