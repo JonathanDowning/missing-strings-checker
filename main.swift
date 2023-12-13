@@ -13,8 +13,6 @@ guard let enumerator = FileManager.default.enumerator(at: URL(fileURLWithPath: F
     fatalError("Could not create enumerator")
 }
 
-let exceptions: Set<String> = ["photos_added_pre_numeral"]
-
 var missingStrings: [String: [String]] = [:]
 
 for case let url as URL in enumerator where try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
