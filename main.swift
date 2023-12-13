@@ -31,14 +31,14 @@ for case let url as URL in enumerator where try url.resourceValues(forKeys: [.is
     }
 }
 
-for stringsUrl in stringsUrls {
+for url in stringsUrls {
     let emptyStrings = try parseEmptyStringsFile(at: url, with: exceptions)
     if !emptyStrings.isEmpty {
         missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
     }
 }
 
-for stringsDictUrl in stringsDictUrls {
+for url in stringsDictUrls {
     let emptyStrings = try parseEmptyStringsDictFile(at: url, with: exceptions)
     if !emptyStrings.isEmpty {
         missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
