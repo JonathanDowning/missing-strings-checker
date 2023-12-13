@@ -13,24 +13,35 @@ guard let enumerator = FileManager.default.enumerator(at: URL(fileURLWithPath: F
     fatalError("Could not create enumerator")
 }
 
+var exceptions = Set<String>()
 var missingStrings: [String: [String]] = [:]
 
+var stringsUrls: [URL] = []
+var stringsDictUrls: [URL] = []
+
 for case let url as URL in enumerator where try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
-    var exceptions = Set<String>()
     if url.pathExtension == "txt" && url.deletingPathExtension().lastPathComponent == "ignored_translation_keys" {
         exceptions = try parseExceptionKeys(at: url)
     }
     if url.pathExtension == "strings" {
-        let emptyStrings = try parseEmptyStringsFile(at: url, with: exceptions)
-        if !emptyStrings.isEmpty {
-            missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
-        }
+        stringsUrls.append(url)
     }
     if url.pathExtension == "stringsdict" {
-        let emptyStrings = try parseEmptyStringsDictFile(at: url, with: exceptions)
-        if !emptyStrings.isEmpty {
-            missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
-        }
+        stringsDictUrls.append(url)
+    }
+}
+
+for stringsUrl in stringsUrls {
+    let emptyStrings = try parseEmptyStringsFile(at: url, with: exceptions)
+    if !emptyStrings.isEmpty {
+        missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
+    }
+}
+
+for stringsDictUrl in stringsDictUrls {
+    let emptyStrings = try parseEmptyStringsDictFile(at: url, with: exceptions)
+    if !emptyStrings.isEmpty {
+        missingStrings[url.pathComponents[max(0, url.pathComponents.count - 2)], default: []].append(contentsOf: emptyStrings)
     }
 }
 
