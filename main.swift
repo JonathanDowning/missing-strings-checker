@@ -13,6 +13,8 @@ guard let enumerator = FileManager.default.enumerator(at: URL(fileURLWithPath: F
     fatalError("Could not create enumerator")
 }
 
+let exceptions: Set<String> = ["photos_added_pre_numeral"]
+
 var missingStrings: [String: [String]] = [:]
 
 for case let url as URL in enumerator where try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
@@ -48,7 +50,7 @@ func parseEmptyStringsFile(at url: URL) throws -> [String] {
         guard string.popLast() == ";" else { return nil }
         let components = string.components(separatedBy: "=").map { $0.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "\"", with: "") }
         guard components.count == 2 else { return nil }
-        guard !components[0].isEmpty else { return nil }
+        guard !components[0].isEmpty, !exceptions.contains(components[0]) else { return nil }
         guard components[1].isEmpty else { return nil }
         return components[0]
     }
@@ -78,7 +80,7 @@ func parseEmptyStringsDictFile(at url: URL) throws -> [String] {
             dictionary.format.many?.isEmpty != true,
             dictionary.format.few?.isEmpty != true
         else {
-            return key
+            return exceptions.contains(key) ? nil : key
         }
         return nil
     }
