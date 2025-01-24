@@ -20,6 +20,11 @@ var stringsUrls: [URL] = []
 var stringsDictUrls: [URL] = []
 
 for case let url as URL in enumerator where try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
+    // Skip files inside .xcframework directories
+    if url.pathComponents.contains(where: { $0.hasSuffix(".xcframework") }) {
+        continue
+    }
+    
     if url.pathExtension == "txt" && url.deletingPathExtension().lastPathComponent == "ignored_translation_keys" {
         exceptions = try parseExceptionKeys(at: url)
     }
